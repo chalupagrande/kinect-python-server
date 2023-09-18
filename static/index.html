@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebSocket Example</title>
+  </head>
+  <body>
+    <h1>WebSocket Example</h1>
+
+    <div id="message-log">
+      <!-- Received messages will be displayed here -->
+    </div>
+
+    <script>
+      // Create a WebSocket connection
+      let count = 0;
+      let isFirst = true;
+      let startTime = Date.now();
+      const socket = new WebSocket("ws://192.168.86.239:8000/ws");
+
+      // Handle incoming messages
+      socket.addEventListener("message", function (event) {
+        const message = event.data;
+        count += 1;
+        if (Date.now() - startTime > 1000) {
+          console.log(count);
+          count = 0;
+          startTime = Date.now();
+          // const utf8Decoder = new TextDecoder('utf-8');
+          // const utf8DecodedBytes = utf8Decoder.decode(message);
+
+          // // Parse the JSON data (assuming it was originally a dictionary)
+          // const decodedObject = JSON.parse(utf8DecodedBytes);
+          // console.log(decodedObject)
+          if (isFirst) {
+            console.log(message);
+            isFirst = false;
+          }
+        }
+
+        // Log the received message to the console
+        // console.log("Received: ", message);
+
+        // Display the message in the message-log div
+        const messageLog = document.getElementById("message-log");
+        messageLog.innerHTML += "<p>Received</p>";
+      });
+
+      // Handle errors
+      socket.addEventListener("error", function (event) {
+        console.error("WebSocket error:", event);
+      });
+
+      // Handle connection closure
+      socket.addEventListener("close", function (event) {
+        if (event.wasClean) {
+          console.log(
+            "WebSocket closed cleanly, code=" +
+              event.code +
+              ", reason=" +
+              event.reason
+          );
+        } else {
+          console.error("WebSocket connection broken");
+        }
+      });
+    </script>
+  </body>
+</html>
